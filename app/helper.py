@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 
 class Parser:
     def __init__(self, category, storage=None):
-        # TODO: add pagination
         self.storage = storage
         self._url = "http://books.toscrape.com/catalogue/category/books/{0}/index.html"
         self._category = category
@@ -48,7 +47,6 @@ class Parser:
         return self._soup.find_all('article', class_='product_pod')
 
     def parse_books(self):
-        # self.category
         for book in self.get_books():
             title, price, rating = self.parse_book_data(book)
             self.books.append((title, self.category, float(price), rating))
@@ -60,7 +58,3 @@ class Parser:
         ratings = {'One': 1, 'Two': 2, 'Three': 3, 'Four': 4, 'Five': 5}
         rating = ratings.get(rating_class, 0)
         return title, price, rating
-
-
-    def save(self):
-        pass #TODO: save in storage

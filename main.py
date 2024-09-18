@@ -1,20 +1,33 @@
-from db import DB
-from helper import Parser
+from flask import Flask
+
+from app.db import DB
+from app.views import book
+from app.helper import Parser
 
 
-parser = Parser(category="historical-fiction_4")
-# parser1 = Parser(category="historical-fiction_4")
+app = Flask(__name__)
 
-parser.fetch_data()
-data = parser.books
-# print(data)
-# parser1.fetch_data()
-# print(parser.books[3])
-# print(parser1.category, parser1.books)
+app.config.from_pyfile('config.py', silent=True)
 
-db = DB(database_name='my_books.db')
+app.logger.setLevel(app.config['LOG_LEVEL'])
+
+book_prefix = '/'
+
+app.register_blueprint(book, url_prefix=book_prefix)
+
+app.logger.info('Application Started Successfully')
+
+db = DB(database='my_books.db')
 db.create_table()
-db.save(data)
-print(db.select())
+if db.is_empty():
+    for category in app.config['CATEGORIES']:
+        parser = Parser(category=category)
+        parser.fetch_data()
+        count = db.create(parser.books)
+        app.logger.info(f"{count} rows inserted.")
 
 
+if __name__ == '__main__':
+    app.run(host=app.config['FLASK_HOST'],
+            port=app.config['FLASK_PORT'],
+            debug=app.config['DEBUG'])

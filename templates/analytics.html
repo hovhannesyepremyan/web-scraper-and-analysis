@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Analytics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            margin-top: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            margin-bottom: 20px;
+            color: #0056b3;
+        }
+        .table {
+            margin-bottom: 40px;
+        }
+        th {
+            background-color: #f1f1f1;
+        }
+        .table-responsive {
+            overflow-x: auto;  // Ensures table is scrollable on smaller screens
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">Book Analytics</h1>
+
+    <!-- Navigation back to the main page -->
+    <div class="mb-3">
+        <a href="/" class="btn btn-primary">Back to Books</a>
+    </div>
+
+    <!-- Summary Statistics -->
+    <h2>Summary Statistics</h2>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Statistic</th>
+                    <th>Price</th>
+                    <th>Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Count</td>
+                    <td>{{ stats['price']['count'] }}</td>
+                    <td>{{ stats['rating']['count'] }}</td>
+                </tr>
+                <tr>
+                    <td>Mean</td>
+                    <td>{{ '%.2f'|format(stats['price']['mean']) }}</td>
+                    <td>{{ '%.2f'|format(stats['rating']['mean']) }}</td>
+                </tr>
+                <tr>
+                    <td>Standard Deviation</td>
+                    <td>{{ '%.2f'|format(stats['price']['std']) }}</td>
+                    <td>{{ '%.2f'|format(stats['rating']['std']) }}</td>
+                </tr>
+                <tr>
+                    <td>Min</td>
+                    <td>${{ '%.2f'|format(stats['price']['min']) }}</td>
+                    <td>{{ stats['rating']['min'] }} Stars</td>
+                </tr>
+                <tr>
+                    <td>25%</td>
+                    <td>${{ '%.2f'|format(stats['price']['25%']) }}</td>
+                    <td>{{ stats['rating']['25%'] }} Stars</td>
+                </tr>
+                <tr>
+                    <td>50% (Median)</td>
+                    <td>${{ '%.2f'|format(stats['price']['50%']) }}</td>
+                    <td>{{ stats['rating']['50%'] }} Stars</td>
+                </tr>
+                <tr>
+                    <td>75%</td>
+                    <td>${{ '%.2f'|format(stats['price']['75%']) }}</td>
+                    <td>{{ stats['rating']['75%'] }} Stars</td>
+                </tr>
+                <tr>
+                    <td>Max</td>
+                    <td>${{ '%.2f'|format(stats['price']['max']) }}</td>
+                    <td>{{ stats['rating']['max'] }} Stars</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Books Per Category -->
+    <h2>Books Per Category</h2>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category, count in books_per_category.items() %}
+                <tr>
+                    <td>{{ category }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
