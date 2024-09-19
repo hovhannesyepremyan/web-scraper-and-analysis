@@ -17,13 +17,15 @@ app.register_blueprint(book, url_prefix=book_prefix)
 
 app.logger.info('Application Started Successfully')
 
-db = DB(database='my_books.db')
-db.create_table()
-if db.is_empty():
+
+DB.set_connection(database='my_books.db')
+DB.set_cursor()
+DB.create_table()
+if DB.is_empty():
     for category in app.config['CATEGORIES']:
         parser = Parser(category=category)
         parser.fetch_data()
-        count = db.create(parser.books)
+        count = DB.create(parser.books)
         app.logger.info(f"{count} rows inserted.")
 
 

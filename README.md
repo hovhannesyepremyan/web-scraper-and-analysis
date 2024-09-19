@@ -8,7 +8,7 @@ This project for educational purposes
 
     Create and activate Python virtual environment
 
-    pip install recuirments.txt
+    pip install -r recuirments.txt
 
     Copy .env_template to .env
 

@@ -2,24 +2,24 @@ import sqlite3
 
 
 class DB:
-    def __init__(self, database):
-        self.database = database
-        self._connection = None
-        self._cursor = None
+    _CONNECTION = None
+    _CURSOR = None
+    SELECT_ALL_QUERY = "SELECT * FROM books"
 
-    @property
-    def connection(self):
-        if not self._connection:
-            self._connection = sqlite3.connect(self.database)
-        return self._connection
+    @classmethod
+    def set_connection(cls, database):
+        cls._CONNECTION = sqlite3.connect(database, check_same_thread=False)
 
-    @property
-    def cursor(self):
-        if not self._cursor:
-            self._cursor = self.connection.cursor()
-        return self._cursor
+    @classmethod
+    def set_cursor(cls):
+        cls._CURSOR = cls._CONNECTION.cursor()
 
-    def create_table(self):
+    @classmethod
+    def get_connection(cls):
+        return cls._CONNECTION
+
+    @classmethod
+    def create_table(cls):
         query = """
         CREATE TABLE IF NOT EXISTS books (
             title TEXT,
@@ -28,30 +28,34 @@ class DB:
             rating INTEGER
         )
         """
-        self.cursor.execute(query)
+        cls._CURSOR.execute(query)
 
-    def create(self, data):
+    @classmethod
+    def create(cls, data):
         query = "INSERT INTO books (title, category, price, rating) VALUES(?, ?, ?, ?)"
-        self._cursor.executemany(query, data)
-        self._connection.commit()
-        return self.cursor.rowcount
+        cls._CURSOR.executemany(query, data)
+        cls._CONNECTION.commit()
+        return cls._CURSOR.rowcount
 
-    def select(self, category: str=None):
-        query = "SELECT * FROM books"
+    @classmethod
+    def select(cls, category: str=None):
+        query = cls.SELECT_ALL_QUERY
         params = ()
         if category:
-            query += f" WHERE category = ?"
+            query += " WHERE category = ?"
             params = (category,)
-        data = self.cursor.execute(query, params).fetchall()
+        data = cls._CURSOR.execute(query, params).fetchall()
         return data
 
-    def get_categories(self):
+    @classmethod
+    def get_categories(cls):
         query = "SELECT DISTINCT category FROM books ORDER BY category"
-        cursor = self.cursor.execute(query)
+        cursor = cls._CURSOR.execute(query)
         categories = [row[0] for row in cursor.fetchall()]
         return categories
 
-    def is_empty(self):
+    @classmethod
+    def is_empty(cls):
         query = "SELECT count(*) FROM books"
-        c = self.cursor.execute(query).fetchone()[0]
-        return not bool(c)
+        count = cls._CURSOR.execute(query).fetchone()[0]
+        return count == 0
